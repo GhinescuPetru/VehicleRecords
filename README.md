@@ -1,10 +1,8 @@
-- 👋 Hi, I’m @ghinescu-petru-andrei-30125
-- 👀 I’m interested in ...
-- 🌱 I’m currently learning ...
-- 💞️ I’m looking to collaborate on ...
-- 📫 How to reach me ...
-
-<!---
-ghinescu-petru-andrei-30125/ghinescu-petru-andrei-30125 is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
-You can click the Preview link to take a look at your changes.
---->
+The application consists of a GUI created in java swing in which the user is able to:
+-add vehicles based on their registration plate as well as add details about the vehicles(ex: weight, length, colour, manufacturer etc.);
+-search for specific vehicles by their registration plate;
+-remove existing vehicles;
+-visualize all added vehicles;
+-sort added vehicles by their characteristics, ascending or descending;
+-add filters so that only specific vehicles will be shown(ex: vehicles with weight less then 3.5 t);
+The application can be further improved using databases.
