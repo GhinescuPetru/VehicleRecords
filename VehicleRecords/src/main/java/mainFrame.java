@@ -7,6 +7,16 @@
  *
  * @author petru
  */
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
+
 public class mainFrame extends javax.swing.JFrame {
 
     /**
@@ -14,8 +24,33 @@ public class mainFrame extends javax.swing.JFrame {
      */
     public mainFrame() {
         initComponents();
+        connection();
     }
 
+    public void connection() {
+        try {
+            Connection connection = DBConnection.getConnection();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM Vehicle");
+
+            DefaultTableModel model = new DefaultTableModel();
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            for (int i = 1; i <= columnCount; i++) {
+                model.addColumn(metaData.getColumnLabel(i));
+            }
+            while (resultSet.next()) {
+                Object[] row = new Object[columnCount];
+                for (int i = 1; i <= columnCount; ++i) {
+                    row[i - 1] = resultSet.getObject(i);
+                }
+                model.addRow(row);
+            }
+            mainTable.setModel(model);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -61,9 +96,11 @@ public class mainFrame extends javax.swing.JFrame {
         jLabel14 = new javax.swing.JLabel();
         removeTextField = new javax.swing.JTextField();
         deleteButton = new javax.swing.JButton();
+        searchFrame = new javax.swing.JFrame();
+        jLabel15 = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         tabelScrollPane = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        mainTable = new javax.swing.JTable();
         optionsPanel = new javax.swing.JPanel();
         addButton = new javax.swing.JButton();
         removeButton = new javax.swing.JButton();
@@ -269,7 +306,6 @@ public class mainFrame extends javax.swing.JFrame {
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        removeFrame.setPreferredSize(new java.awt.Dimension(400, 200));
         removeFrame.setSize(new java.awt.Dimension(400, 200));
 
         jLabel14.setText("Please enter the registration plate of the vehicle");
@@ -293,9 +329,9 @@ public class mainFrame extends javax.swing.JFrame {
         removeFrameLayout.setHorizontalGroup(
             removeFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(removeFrameLayout.createSequentialGroup()
-                .addContainerGap(79, Short.MAX_VALUE)
+                .addContainerGap(76, Short.MAX_VALUE)
                 .addComponent(jLabel14)
-                .addContainerGap(79, Short.MAX_VALUE))
+                .addContainerGap(75, Short.MAX_VALUE))
             .addGroup(removeFrameLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(removeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -312,14 +348,33 @@ public class mainFrame extends javax.swing.JFrame {
                 .addComponent(jLabel14)
                 .addGap(18, 18, 18)
                 .addComponent(removeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
                 .addComponent(deleteButton)
                 .addGap(58, 58, 58))
         );
 
+        jLabel15.setText("Provide the registration number of the vehicle");
+
+        javax.swing.GroupLayout searchFrameLayout = new javax.swing.GroupLayout(searchFrame.getContentPane());
+        searchFrame.getContentPane().setLayout(searchFrameLayout);
+        searchFrameLayout.setHorizontalGroup(
+            searchFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(searchFrameLayout.createSequentialGroup()
+                .addGap(35, 35, 35)
+                .addComponent(jLabel15)
+                .addContainerGap(123, Short.MAX_VALUE))
+        );
+        searchFrameLayout.setVerticalGroup(
+            searchFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(searchFrameLayout.createSequentialGroup()
+                .addGap(62, 62, 62)
+                .addComponent(jLabel15)
+                .addContainerGap(222, Short.MAX_VALUE))
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        mainTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -330,7 +385,7 @@ public class mainFrame extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        tabelScrollPane.setViewportView(jTable1);
+        tabelScrollPane.setViewportView(mainTable);
 
         jTabbedPane1.addTab("Tabel", tabelScrollPane);
 
@@ -480,6 +535,7 @@ public class mainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -490,9 +546,9 @@ public class mainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTextField kmTextField;
     private javax.swing.JTextField lengthTextField;
+    private javax.swing.JTable mainTable;
     private javax.swing.JButton okButton;
     private javax.swing.JFrame okFrame;
     private javax.swing.JPanel optionsPanel;
@@ -502,6 +558,7 @@ public class mainFrame extends javax.swing.JFrame {
     private javax.swing.JFrame removeFrame;
     private javax.swing.JTextField removeTextField;
     private javax.swing.JButton searchButton;
+    private javax.swing.JFrame searchFrame;
     private javax.swing.JScrollPane tabelScrollPane;
     private javax.swing.JTextField weightTextField;
     private javax.swing.JTextField widthTextField;
