@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 public class mainFrame extends javax.swing.JFrame {
@@ -22,6 +23,9 @@ public class mainFrame extends javax.swing.JFrame {
     /**
      * Creates new form mainFrame
      */
+    Connection connection = null;
+    Statement statement = null;
+    ResultSet resultSet = null;
     public mainFrame() {
         initComponents();
         connection();
@@ -29,12 +33,12 @@ public class mainFrame extends javax.swing.JFrame {
 
     public void connection() {
         try {
-            Connection connection = DBConnection.getConnection();
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM Vehicle");
-
+            connection = DBConnection.getConnection();
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("SELECT * FROM Vehicle");
             DefaultTableModel model = new DefaultTableModel();
             ResultSetMetaData metaData = resultSet.getMetaData();
+            
             int columnCount = metaData.getColumnCount();
             for (int i = 1; i <= columnCount; i++) {
                 model.addColumn(metaData.getColumnLabel(i));
@@ -51,6 +55,30 @@ public class mainFrame extends javax.swing.JFrame {
             ex.printStackTrace();
         }
     }
+
+    public void setTextEmpty() {
+        registrationTextField.setText("");
+        countryTextField.setText("");
+        ownerTextField.setText("");
+        yearTextField.setText("");
+        engineTextField.setText("");
+        classificationTextField.setText("");
+        emmisionTextField.setText("");
+        kmTextField.setText("");
+        weightTextField.setText("");
+        lengthTextField.setText("");
+        widthTextField.setText("");
+        colourTextField.setText("");
+    }
+
+    public ResultSet search(JTextField textField) throws SQLException {
+        String sql = "SELECT * FROM Vehicle WHERE [Registration plate] = ?";            //checking for matching registration plates
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, textField.getText());
+        ResultSet check = preparedStatement.executeQuery();
+        return check;
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -64,7 +92,7 @@ public class mainFrame extends javax.swing.JFrame {
         registrationTextField = new javax.swing.JTextField();
         countryTextField = new javax.swing.JTextField();
         ownerTextField = new javax.swing.JTextField();
-        ageTextField = new javax.swing.JTextField();
+        yearTextField = new javax.swing.JTextField();
         engineTextField = new javax.swing.JTextField();
         classificationTextField = new javax.swing.JTextField();
         emmisionTextField = new javax.swing.JTextField();
@@ -91,23 +119,27 @@ public class mainFrame extends javax.swing.JFrame {
         okFrame = new javax.swing.JFrame();
         jPanel1 = new javax.swing.JPanel();
         okButton = new javax.swing.JButton();
-        addOkLabel = new javax.swing.JLabel();
+        okLabel = new javax.swing.JLabel();
         removeFrame = new javax.swing.JFrame();
         jLabel14 = new javax.swing.JLabel();
         removeTextField = new javax.swing.JTextField();
         deleteButton = new javax.swing.JButton();
         searchFrame = new javax.swing.JFrame();
         jLabel15 = new javax.swing.JLabel();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
         tabelScrollPane = new javax.swing.JScrollPane();
         mainTable = new javax.swing.JTable();
-        optionsPanel = new javax.swing.JPanel();
         addButton = new javax.swing.JButton();
         removeButton = new javax.swing.JButton();
         searchButton = new javax.swing.JButton();
 
-        addFrame.setPreferredSize(new java.awt.Dimension(500, 300));
-        addFrame.setSize(new java.awt.Dimension(500, 300));
+        addFrame.setPreferredSize(new java.awt.Dimension(600, 300));
+        addFrame.setSize(new java.awt.Dimension(600, 300));
+
+        yearTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                yearTextFieldActionPerformed(evt);
+            }
+        });
 
         emmisionTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -133,7 +165,7 @@ public class mainFrame extends javax.swing.JFrame {
 
         jLabel2.setText("Country:");
 
-        jLabel3.setText("Vehicle age:");
+        jLabel3.setText("Year of manufacture:");
 
         jLabel4.setText("Km:");
 
@@ -159,6 +191,10 @@ public class mainFrame extends javax.swing.JFrame {
         addFrame.getContentPane().setLayout(addFrameLayout);
         addFrameLayout.setHorizontalGroup(
             addFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, addFrameLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel13)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(addFrameLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(addFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -171,12 +207,12 @@ public class mainFrame extends javax.swing.JFrame {
                     .addComponent(jLabel6))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(addFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(ageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(engineTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(registrationTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE)
-                    .addComponent(countryTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ownerTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(classificationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(yearTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(engineTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(countryTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(ownerTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(classificationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(registrationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(addFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel4)
@@ -188,46 +224,47 @@ public class mainFrame extends javax.swing.JFrame {
                     .addComponent(jLabel10))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(addFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(kmTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(widthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(colourTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(weightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lengthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(emmisionTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 62, Short.MAX_VALUE)
-                .addGroup(addFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(addButtonFrame, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(cancelButtonFrame, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(22, 22, 22))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, addFrameLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel13)
-                .addGap(121, 121, 121))
+                    .addGroup(addFrameLayout.createSequentialGroup()
+                        .addGroup(addFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(widthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(colourTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(22, 169, Short.MAX_VALUE))
+                    .addGroup(addFrameLayout.createSequentialGroup()
+                        .addGroup(addFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(kmTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(weightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lengthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(emmisionTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(addFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(addButtonFrame, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(cancelButtonFrame))
+                        .addGap(46, 46, 46))))
         );
         addFrameLayout.setVerticalGroup(
             addFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(addFrameLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel13)
+                .addGap(18, 18, 18)
                 .addGroup(addFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(addFrameLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel13)
-                        .addGap(18, 18, 18)
+                        .addComponent(addButtonFrame, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(12, 12, 12)
+                        .addComponent(cancelButtonFrame, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(addFrameLayout.createSequentialGroup()
                         .addGroup(addFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(registrationTextField)
                             .addComponent(jLabel1)
                             .addComponent(jLabel12)
-                            .addComponent(emmisionTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(emmisionTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(registrationTextField))
                         .addGap(10, 10, 10)
                         .addGroup(addFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(countryTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel2)
                             .addComponent(jLabel4)
-                            .addComponent(kmTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(addFrameLayout.createSequentialGroup()
-                        .addGap(41, 41, 41)
-                        .addComponent(addButtonFrame, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGroup(addFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(addFrameLayout.createSequentialGroup()
+                            .addComponent(kmTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(addFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(ownerTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -236,26 +273,23 @@ public class mainFrame extends javax.swing.JFrame {
                             .addComponent(weightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(addFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(ageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(yearTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel3)
                             .addComponent(jLabel9)
-                            .addComponent(lengthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(addFrameLayout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addComponent(cancelButtonFrame, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(addFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(engineTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel10)
-                    .addComponent(widthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(addFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(colourTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(classificationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6))
-                .addContainerGap(70, Short.MAX_VALUE))
+                            .addComponent(lengthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(addFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(engineTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel10)
+                            .addComponent(widthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(addFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel7)
+                            .addComponent(colourTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(classificationTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel6))
+                        .addContainerGap(70, Short.MAX_VALUE))))
         );
 
         okFrame.setSize(new java.awt.Dimension(336, 204));
@@ -267,29 +301,29 @@ public class mainFrame extends javax.swing.JFrame {
             }
         });
 
-        addOkLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        addOkLabel.setText("The Vehicle has been succesessfully added!");
-        addOkLabel.setToolTipText("");
-        addOkLabel.setOpaque(true);
+        okLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        okLabel.setText("The Vehicle has been succesessfully added!");
+        okLabel.setToolTipText("");
+        okLabel.setOpaque(true);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap(95, Short.MAX_VALUE)
+                .addComponent(okLabel)
+                .addContainerGap(96, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(okButton)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(56, Short.MAX_VALUE)
-                .addComponent(addOkLabel)
-                .addContainerGap(54, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(91, Short.MAX_VALUE)
-                .addComponent(addOkLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(126, Short.MAX_VALUE)
+                .addComponent(okLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(okButton, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(31, 31, 31))
@@ -329,16 +363,17 @@ public class mainFrame extends javax.swing.JFrame {
         removeFrameLayout.setHorizontalGroup(
             removeFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(removeFrameLayout.createSequentialGroup()
-                .addContainerGap(76, Short.MAX_VALUE)
+                .addContainerGap(49, Short.MAX_VALUE)
                 .addComponent(jLabel14)
-                .addContainerGap(75, Short.MAX_VALUE))
+                .addContainerGap(49, Short.MAX_VALUE))
             .addGroup(removeFrameLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(removeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, removeFrameLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(deleteButton)
+                .addGroup(removeFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(removeTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, removeFrameLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(deleteButton)
+                        .addGap(17, 17, 17)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         removeFrameLayout.setVerticalGroup(
@@ -348,9 +383,9 @@ public class mainFrame extends javax.swing.JFrame {
                 .addComponent(jLabel14)
                 .addGap(18, 18, 18)
                 .addComponent(removeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(deleteButton)
-                .addGap(58, 58, 58))
+                .addContainerGap(141, Short.MAX_VALUE))
         );
 
         jLabel15.setText("Provide the registration number of the vehicle");
@@ -387,8 +422,6 @@ public class mainFrame extends javax.swing.JFrame {
         ));
         tabelScrollPane.setViewportView(mainTable);
 
-        jTabbedPane1.addTab("Tabel", tabelScrollPane);
-
         addButton.setText("Add Vehicle");
         addButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -405,49 +438,34 @@ public class mainFrame extends javax.swing.JFrame {
 
         searchButton.setText("Search Vehicle");
 
-        javax.swing.GroupLayout optionsPanelLayout = new javax.swing.GroupLayout(optionsPanel);
-        optionsPanel.setLayout(optionsPanelLayout);
-        optionsPanelLayout.setHorizontalGroup(
-            optionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(optionsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(optionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(removeButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(searchButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(addButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(649, Short.MAX_VALUE))
-        );
-        optionsPanelLayout.setVerticalGroup(
-            optionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(optionsPanelLayout.createSequentialGroup()
-                .addGap(35, 35, 35)
-                .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(removeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(249, Short.MAX_VALUE))
-        );
-
-        jTabbedPane1.addTab("Options", optionsPanel);
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(tabelScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 938, Short.MAX_VALUE)
+                .addGap(24, 24, 24)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(removeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(19, 19, 19))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1)
+            .addComponent(tabelScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(35, 35, 35)
+                .addComponent(addButton, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(removeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
-        addFrame.setVisible(true);
-    }//GEN-LAST:event_addButtonActionPerformed
 
     private void emmisionTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emmisionTextFieldActionPerformed
         // TODO add your handling code here:
@@ -464,22 +482,85 @@ public class mainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_cancelButtonFrameActionPerformed
 
     private void addButtonFrameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonFrameActionPerformed
+        try {
+            ResultSet check = search(registrationTextField);
+            if (!check.next()) {
+                boolean checkEmpty = false;    //checking for empty labels
+                JTextField[] textFields = {registrationTextField, countryTextField, ownerTextField, yearTextField, engineTextField, classificationTextField, emmisionTextField, kmTextField, weightTextField, lengthTextField, widthTextField, colourTextField};
+                for (JTextField textField : textFields) {
+                    if (textField.getText().isBlank()) {
+                        checkEmpty = true;
+                        break;
+                    }
+                }
+                if (checkEmpty) {
+                    okLabel.setText("Please provide information in all the labels");
+                } else {
+                    PreparedStatement add = connection.prepareStatement("INSERT INTO Vehicle values (?,?,?,?,?,?,?,?,?,?,?,?)");
+                    add.setString(1, registrationTextField.getText());
+                    add.setString(2, countryTextField.getText());
+                    add.setString(3, ownerTextField.getText());
+                    add.setString(4, yearTextField.getText());
+                    add.setString(5, engineTextField.getText());
+                    add.setString(6, classificationTextField.getText());
+                    add.setString(7, emmisionTextField.getText());
+                    add.setString(8, kmTextField.getText());
+                    add.setString(9, weightTextField.getText());
+                    add.setString(10, lengthTextField.getText());
+                    add.setString(11, widthTextField.getText());
+                    add.setString(12, colourTextField.getText());
+                    
+                    add.executeUpdate();
+                    okLabel.setText("The vehicle has been succesessfully added!");
+                    connection();
+                }
+            } else
+                okLabel.setText("The vehicle already exists");
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        setTextEmpty();
         okFrame.setVisible(true);
-        //number verification
     }//GEN-LAST:event_addButtonFrameActionPerformed
 
-    private void removeTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeTextFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_removeTextFieldActionPerformed
+    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
+
+        try {
+            ResultSet check = search(removeTextField);
+            if(!check.next())
+                okLabel.setText("The vehicle does not exist in the database");
+            else {
+                String sql = "DELETE FROM Vehicle WHERE [Registration plate] = ?";
+                PreparedStatement remove = connection.prepareStatement(sql);
+                remove.setString(1, removeTextField.getText());
+                
+                remove.executeUpdate();
+                removeTextField.setText("");
+                okLabel.setText("The has been succesessfully removed!");
+                connection();
+            }
+                
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        okFrame.setVisible(true);
+    }//GEN-LAST:event_deleteButtonActionPerformed
 
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
         removeFrame.setVisible(true);
     }//GEN-LAST:event_removeButtonActionPerformed
 
-    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
-        okFrame.setVisible(true);
-        //number verification
-    }//GEN-LAST:event_deleteButtonActionPerformed
+    private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
+        addFrame.setVisible(true);
+    }//GEN-LAST:event_addButtonActionPerformed
+
+    private void yearTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_yearTextFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_yearTextFieldActionPerformed
+
+    private void removeTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeTextFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_removeTextFieldActionPerformed
 
     /**
      * @param args the command line arguments
@@ -520,8 +601,6 @@ public class mainFrame extends javax.swing.JFrame {
     private javax.swing.JButton addButton;
     private javax.swing.JButton addButtonFrame;
     private javax.swing.JFrame addFrame;
-    private javax.swing.JLabel addOkLabel;
-    private javax.swing.JTextField ageTextField;
     private javax.swing.JButton cancelButtonFrame;
     private javax.swing.JTextField classificationTextField;
     private javax.swing.JTextField colourTextField;
@@ -545,13 +624,12 @@ public class mainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextField kmTextField;
     private javax.swing.JTextField lengthTextField;
     private javax.swing.JTable mainTable;
     private javax.swing.JButton okButton;
     private javax.swing.JFrame okFrame;
-    private javax.swing.JPanel optionsPanel;
+    private javax.swing.JLabel okLabel;
     private javax.swing.JTextField ownerTextField;
     private javax.swing.JTextField registrationTextField;
     private javax.swing.JButton removeButton;
@@ -562,5 +640,6 @@ public class mainFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane tabelScrollPane;
     private javax.swing.JTextField weightTextField;
     private javax.swing.JTextField widthTextField;
+    private javax.swing.JTextField yearTextField;
     // End of variables declaration//GEN-END:variables
 }
