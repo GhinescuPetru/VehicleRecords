@@ -147,7 +147,7 @@ public class mainFrame extends javax.swing.JFrame {
             }
         });
 
-        addButtonFrame.setText("Add");
+        addButtonFrame.setText("Add/Update");
         addButtonFrame.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addButtonFrameActionPerformed(evt);
@@ -235,10 +235,10 @@ public class mainFrame extends javax.swing.JFrame {
                             .addComponent(weightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lengthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(emmisionTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
                         .addGroup(addFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(addButtonFrame, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(cancelButtonFrame))
+                            .addComponent(cancelButtonFrame, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(46, 46, 46))))
         );
         addFrameLayout.setVerticalGroup(
@@ -422,7 +422,7 @@ public class mainFrame extends javax.swing.JFrame {
         ));
         tabelScrollPane.setViewportView(mainTable);
 
-        addButton.setText("Add Vehicle");
+        addButton.setText("Add/Update Vehicle");
         addButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addButtonActionPerformed(evt);
@@ -484,19 +484,20 @@ public class mainFrame extends javax.swing.JFrame {
     private void addButtonFrameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonFrameActionPerformed
         try {
             ResultSet check = search(registrationTextField);
-            if (!check.next()) {
-                boolean checkEmpty = false;    //checking for empty labels
-                JTextField[] textFields = {registrationTextField, countryTextField, ownerTextField, yearTextField, engineTextField, classificationTextField, emmisionTextField, kmTextField, weightTextField, lengthTextField, widthTextField, colourTextField};
-                for (JTextField textField : textFields) {
-                    if (textField.getText().isBlank()) {
-                        checkEmpty = true;
-                        break;
-                    }
+            boolean checkEmpty = false;    //checking for empty labels
+            JTextField[] textFields = {registrationTextField, countryTextField, ownerTextField, yearTextField, engineTextField, classificationTextField, emmisionTextField, kmTextField, weightTextField, lengthTextField, widthTextField, colourTextField};
+            for (JTextField textField : textFields) {
+                if (textField.getText().isBlank()) {
+                    checkEmpty = true;
+                    break;
                 }
-                if (checkEmpty) {
-                    okLabel.setText("Please provide information in all the labels");
-                } else {
-                    PreparedStatement add = connection.prepareStatement("INSERT INTO Vehicle values (?,?,?,?,?,?,?,?,?,?,?,?)");
+            }
+            if (checkEmpty) {
+                okLabel.setText("Please provide information in all the labels");
+            } else {
+                PreparedStatement add;
+                if (!check.next()) {
+                    add = connection.prepareStatement("INSERT INTO Vehicle values (?,?,?,?,?,?,?,?,?,?,?,?)");
                     add.setString(1, registrationTextField.getText());
                     add.setString(2, countryTextField.getText());
                     add.setString(3, ownerTextField.getText());
@@ -509,13 +510,26 @@ public class mainFrame extends javax.swing.JFrame {
                     add.setString(10, lengthTextField.getText());
                     add.setString(11, widthTextField.getText());
                     add.setString(12, colourTextField.getText());
-                    
-                    add.executeUpdate();
                     okLabel.setText("The vehicle has been succesessfully added!");
-                    connection();
+                } else {
+                    add = connection.prepareStatement("UPDATE Vehicle SET Country=?, Owner=?, [Year of manufacture]=?, [Engine displacement]=?, Classification=?, EES=?, Km=?, Weight=?, Length=?, Width=?, Colour=? WHERE [Registration plate]=?");
+                    okLabel.setText("The vehicle has been succesessfully updated!");
+                    add.setString(12, registrationTextField.getText());
+                    add.setString(1, countryTextField.getText());
+                    add.setString(2, ownerTextField.getText());
+                    add.setString(3, yearTextField.getText());
+                    add.setString(4, engineTextField.getText());
+                    add.setString(5, classificationTextField.getText());
+                    add.setString(6, emmisionTextField.getText());
+                    add.setString(7, kmTextField.getText());
+                    add.setString(8, weightTextField.getText());
+                    add.setString(9, lengthTextField.getText());
+                    add.setString(10, widthTextField.getText());
+                    add.setString(11, colourTextField.getText());
                 }
-            } else
-                okLabel.setText("The vehicle already exists");
+                add.executeUpdate();
+                connection();
+            }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
